@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<link rel=icon href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/svgs/brands/square-gitlab.svg">
+		<title>GitLab Dashboard</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+			integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/css/all.min.css" crossorigin="anonymous"/>
+		<link rel="stylesheet" href="Dashboard/style.css">
+		<style>
+			 
+			 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap');
+
+			* {
+				margin: 0;
+				padding: 0;
+				outline: none;
+				box-sizing: border-box;
+				font-family: 'Montserrat', sans-serif;
+			}
+
+			body {
+				background: #171c24;
+			}
+
+			nav {
+				position: fixed;
+				width: 100vw;
+				z-index: 40;
+				background: #171c24;
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: space-between;
+				height: 70px;
+				/* margin-top: -5vh; */
+				/* padding: 0 100px; */
+				/* padding-right: 50px; */
+			}
+
+			nav .logo {
+				color: #fff;
+				font-size: 30px;
+				font-weight: 600;
+				letter-spacing: -1px;
+			}
+
+			.search-form,
+			.filters {
+				display: flex;
+				height: 40px;
+				padding: 2px;
+				background: #1e232b;
+				min-width: 18% !important;
+				border-radius: 2px;
+				border: 1px solid rgba(155, 155, 155, 0.2);
+			}
+
+			.filters {
+				display: inline-block;
+				height: auto;
+				width: 500px;
+			}
+
+			.filters div {
+				padding: 5px 0px;
+				display: inline-block;
+			}
+
+			.filters h4 {
+				color: #fff;
+			}
+
+			.filters button {
+				padding: 2px 5px;
+				margin: 5px;
+				color: #fff;
+				font-size: 17px;
+				background: #4287f5;
+				border: none;
+				border-radius: 2px;
+				cursor: pointer;
+			}
+
+			.filters button i {
+				margin-left: 3px;
+			}
+
+			.search-form .search-data,
+			.filters .search-data {
+				width: 100%;
+				height: 100%;
+				padding: 0 10px;
+				color: #fff;
+				font-size: 17px;
+				border: none;
+				font-weight: 500;
+				background: none;
+			}
+
+			.search-form button {
+				padding: 0 15px;
+				color: #fff;
+				font-size: 17px;
+				background: #4287f5;
+				border: none;
+				border-radius: 2px;
+				cursor: pointer;
+			}
+
+			.search-form button:hover,
+			.filters button:hover {
+				background: #2c62b8;
+			}
+
+			nav .menu-icon,
+			nav .cancel-icon,
+			nav .cancel-filter-icon,
+			nav .filter-icon,
+			nav .search-icon {
+				width: 40px;
+				text-align: center;
+				margin: 0 50px;
+				font-size: 18px;
+				color: #fff;
+				cursor: pointer;
+				display: none;
+			}
+
+			nav .menu-icon span,
+			nav .cancel-icon,
+			nav .cancel-filter-icon,
+			nav .filter-icon,
+			nav .search-icon {
+				display: none;
+			}
+
+			.filters {
+				z-index: 99;
+				position: absolute;
+				top: 80px;
+				left: 50px;
+				opacity: 0;
+				pointer-events: none;
+				transition: top 0.3s ease, opacity 0.1s ease;
+			}
+
+			.filters::before {
+				left: 0px;
+			}
+
+			.filters::after {
+				position: absolute;
+				content: '';
+				height: 113%;
+				padding: 2px;
+				background: #1e232b;
+				border-radius: 2px;
+				min-width: calc(100% + 20px);
+				z-index: -2;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.filters.active {
+				top: 95px;
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			.filters::before {
+				position: absolute;
+				content: "";
+				top: -13px;
+				right: 0px;
+				width: 0;
+				height: 0;
+				z-index: -1;
+				border: 10px solid transparent;
+				border-bottom-color: #1e232b;
+				margin: -20px 0 0;
+			}
+
+			nav .filter-icon {
+				display: block;
+			}
+
+			nav .filter-icon.hide {
+				display: none;
+			}
+
+			nav .cancel-filter-icon.show {
+				display: block;
+			}
+
+			@media (min-width:1140px) {
+				.search-form {
+					margin-right: 50px;
+					margin-left: -50px;
+				}
+			}
+
+			@media (max-width: 1245px) {
+				nav {
+					padding: 0 50px;
+				}
+			}
+
+			@media (max-width: 1140px) {
+				nav {
+					padding: 0px;
+				}
+
+				nav .logo {
+					flex: 2;
+					text-align: center;
+				}
+
+				.search-form {
+					position: absolute;
+					top: 80px;
+					right: 50px;
+					opacity: 0;
+					pointer-events: none;
+					transition: top 0.3s ease, opacity 0.1s ease;
+				}
+
+				.search-form.active {
+					top: 95px;
+					opacity: 1;
+					pointer-events: auto;
+				}
+
+				.search-form:before {
+					position: absolute;
+					content: "";
+					top: -10px;
+					right: 0px;
+					width: 0;
+					height: 0;
+					z-index: -1;
+					border: 10px solid transparent;
+					border-bottom-color: #1e232b;
+					margin: -20px 0 0;
+				}
+
+				.search-form:after {
+					position: absolute;
+					content: '';
+					height: 60px;
+					padding: 2px;
+					background: #1e232b;
+					border-radius: 2px;
+					min-width: calc(100% + 20px);
+					z-index: -2;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%, -50%);
+				}
+
+				nav .search-icon {
+					display: block;
+				}
+
+				nav .search-icon.hide {
+					display: none;
+				}
+
+				nav .cancel-icon.show {
+					display: block;
+				}
+			}
+
+			@media (max-width: 980px) {
+
+				nav .menu-icon,
+				nav .cancel-icon,
+				nav .cancel-filter-icon,
+				nav .filter-icon,
+				nav .search-icon {
+					margin: 0 20px;
+				}
+
+				.search-form {
+					right: 30px;
+				}
+
+				.filters {
+					left: 30px;
+				}
+			}
+
+			@media (max-width: 350px) {
+
+				nav .menu-icon,
+				nav .cancel-icon,
+				nav .cancel-filter-icon,
+				nav .filter-icon,
+				nav .search-icon {
+					margin: 0 10px;
+					font-size: 16px;
+				}
+			}
+
+			.content {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.content header {
+				font-size: 30px;
+				font-weight: 700;
+			}
+
+			.content .text {
+				font-size: 30px;
+				font-weight: 700;
+			}
+
+			.content .space {
+				margin: 10px 0;
+			}
+
+			body {
+				background-color: #757575;
+			}
+
+			.container {
+				content: "";
+				display: table;
+				clear: both;
+				width: 50vw;
+				height: 4px;
+				margin-top: 10px;
+				margin-bottom: 10px;
+				padding: 2px;
+			}
+
+			.percentage-bar {
+				color: #000;
+				background-color: #babab8;
+				border-radius: 10px;
+				margin: 0;
+				overflow: hidden;
+				margin-bottom: 10px;
+			}
+
+			.red-bar {
+				background-color: #f55;
+			}
+
+			.blue-bar {
+				background-color: #4287f5;
+				margin: 0;
+			}
+
+			.blue {
+				color: #4287f5;
+			}
+
+			.red {
+				color: #f55;
+			}
+
+			.purple {
+				color: #fc51c3;
+			}
+
+			.orange {
+				color: #f7a036;
+			}
+
+			span {
+				color: #757575;
+				font-weight: 600;
+				font-size: 16px;
+			}
+
+			.time {
+				margin: 0;
+				padding: 0;
+				color: #3b3b39;
+				font-weight: 500;
+			}
+
+			.page-content {
+				max-width: 1200px;
+				margin: 2rem auto;
+			}
+
+			.container-wrapper {
+				padding: 1rem 2rem;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+				border-radius: 2px;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				background-color: #252c36;
+			}
+
+			.container-wrapper h4 {
+				color: #fff;
+				font-size: 1.3rem;
+			}
+
+			.container-wrapper h5 {
+				color: #3c3c3c;
+				margin-bottom: 1.5rem;
+				font-size: 1rem;
+			}
+
+			.info-wrapper {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				margin-bottom: 15px;
+				align-items: flex-start;
+			}
+
+			.info-wrapper div span {
+				color: #c9c9d6;
+			}
+
+			.info-wrapper div b {
+				color: #fff;
+			}
+
+			.pill {
+				border-radius: 2px;
+				font-size: 12px;
+				padding: 2px 7px;
+				margin-left: 7px;
+				white-space: nowrap;
+			}
+
+			.pill-red {
+				background-color: #f55;
+				color: #fff;
+			}
+
+			.pill-green {
+				background-color: #d1f9d7;
+				color: #3c3c3c;
+			}
+
+			.pxm-pill {
+				border-radius: 2px;
+				font-size: 12px;
+				padding: 2px 7px;
+				display: inline-block;
+				width: fit-content;
+				block-size: fit-content;
+			}
+
+			.pxm-pill-blue {
+				background-color: #d1eaf9;
+				color: #3c3c3c;
+			}
+
+			.pxm-pill-orange {
+				background-color: #ffbc74;
+				color: #402100;
+			}
+
+			.pill-orange {
+				background-color: #ffbc74;
+				color: #402100;
+			}
+
+			.last-item {
+				margin-top: auto;
+				font-size: 14px;
+				border-top: 1px solid #ddd;
+				padding-top: 7px;
+				color: #c9c9d6;
+			}
+
+			a {
+				font-weight: inherit;
+			}
+
+			button {
+				border-radius: 4px;
+				padding: 2px 10px;
+				border-width: 1px;
+				border-color: #3872e1;
+				background-color: #e6eefd;
+				color: #3872e1;
+				transition: all ease-in 100ms;
+				cursor: pointer;
+			}
+
+			button:hover,
+			button.mixitup-control-active {
+				background-color: #3872e1;
+				color: #fff;
+			}
+
+			.mb-1,
+			.mixitup-control-active {
+				margin: 3px;
+			}
+
+			::-webkit-scrollbar {
+				width: 10px;
+			}
+
+			::-webkit-scrollbar-track {
+				/* background: #171c24; */
+				margin-top: 7.5vh;
+				box-shadow: inset 0 0 5px rgb(74, 73, 73);
+				border-radius: 2px;
+			}
+
+			::-webkit-scrollbar-thumb {
+				background: #4287f5;
+				border-radius: 10px;
+			}
+
+			::-webkit-scrollbar-thumb:hover {
+				background: #2c62b8;
+			}
+
+			#list {
+				overflow-y: auto;
+				max-height: 100vh;
+				/* margin-top: 5vh; */
+				padding-top: 10vh;
+			}
+		</style>
+	</head>
+	<body>
+		<nav>
+			<div class="filter-icon">
+				<span class="fas fa-filter"></span>
+			</div>
+			<div class="cancel-filter-icon">
+				<span class="fas fa-times"></span>
+			</div>
+			<form class="filters" action="#">
+				<h4>Filter by PXM:</h4>
+				<div>
+					<button type="button" data-filter="all" class="mb-1" style="margin-right:-1px;">All PXMs</button>
+					<button type="button" data-filter=".pxm-tom " class="mb-1">Tom</button>
+					<button type="button" data-filter=".pxm-nancy " class="mb-1">Nancy</button>
+					<button type="button" data-filter=".pxm-jake " class="mb-1">Jake</button>
+					<button type="button" data-filter=".pxm-natalya " class="mb-1">Natalya</button>
+					<button type="button" data-filter=".pxm-cathy " class="mb-1">Cathy</button>
+					<button type="button" data-filter=".pxm-hugh " class="mb-1">Hugh</button>
+					<button type="button" data-filter=".pxm-gustav " class="mb-1">Gustav</button>
+					<button type="button" data-filter=".pxm-william " class="mb-1">William</button>
+					<button type="button" data-filter=".pxm-ben " class="mb-1">Ben</button>
+					<button type="button" data-filter=".pxm-unassigned " class="mb-1">Unassigned</button>
+				</div>
+				<h4>Sort by:</h4>
+				<div>
+					<button type="button" class="sorttitle">Title<i class="fa fa-caret-up ml-1"
+						aria-hidden="true"></i>
+					</button>
+					<button type="button" class="sortduedate">Earliest Due date<i
+						class="fa fa-caret-up ml-1" aria-hidden="true"></i>
+					</button>
+				</div>
+			</form>
+			<div class="logo">
+				GitLab Dashboard
+			</div>
+			<div class="search-icon">
+				<span class="fas fa-search"></span>
+			</div>
+			<div class="cancel-icon">
+				<span class="fas fa-times"></span>
+			</div>
+			<form class="search-form" action="#">
+				<input onkeyup="filtering()" id="search" type="search" class="search-data" placeholder="Search" required>
+				<button type="button" class="fas fa-search" onclick="filtering()"></button>
+			</form>
+		</nav>
+		<div>
+			<div id="list" class="d-flex flex-row flex-wrap" style="padding-top: 100px;">
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-natalya "
+					data-title=" Saving the turtles ad campaign " data-due-date=" 2023-02-20 ">
+					<div class="container-wrapper">
+						<h4 name="project">Saving the turtles ad campaign</h4>
+						<h5><a
+							href="#">Winter plan of action</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Natalya</span><br>
+						<div>
+							<div class=" percentage-bar red-bar ">
+								<div class="container blue-bar" style="  width:37.5% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">90h</b></span><br>
+									<span>Est <b class="time">30h</b></span>
+								</div>
+								<span class=" pill pill-red ">+60h</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" blue ">Feb 20, 2023 (remaining: 5 months)</b></div>
+					</div>
+				</div>
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-natalya "
+					data-title=" Saving the turtles ad campaign " data-due-date=" 2022-07-25 ">
+					<div class="container-wrapper">
+						<h4 name="project">Saving the turtles ad campaign</h4>
+						<h5><a
+							href="#">Summer plan of action</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Natalya</span><br>
+						<div>
+							<div class=" percentage-bar">
+								<div class="container blue-bar" style="  width:80% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">160h</b></span><br>
+									<span>Est <b class="time">200h</b></span>
+								</div>
+								<span class=" pill pill-green ">40h remaining</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" purple ">Jul 25, 2022 (expired)</b></div>
+					</div>
+				</div>
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-tom "
+					data-title=" Social Media Marketing " data-due-date=" 2023-02-01 ">
+					<div class="container-wrapper">
+						<h4 name="project">Social Media Marketing</h4>
+						<h5><a href="#">Instagram growth 2022 - 2023</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Tom</span><br>
+						<div>
+							<div class=" percentage-bar ">
+								<div class="container blue-bar" style="  width:80.0974537037037% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">96h</b></span><br>
+									<span>Est <b class="time">120h</b></span>
+								</div>
+								<span class=" pill pill-orange ">24h remaining</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" blue ">Feb 01, 2023 (remaining: 4 months)</b></div>
+					</div>
+				</div>
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-tom "
+					data-title=" Social Media Marketing " data-due-date=" 2023-02-23 ">
+					<div class="container-wrapper">
+						<h4 name="project">Social Media Marketing</h4>
+						<h5><a href="#">Facebook growth 2022 - 2023</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Tom</span><br>
+						<div>
+							<div class=" percentage-bar ">
+								<div class="container blue-bar" style="  width:100.0% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">8h</b></span><br>
+									<span>Est <b class="time">8h</b></span>
+								</div>
+								<span class=" pill pill-orange ">0h remaining</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" blue ">Feb 23, 2023 (remaining: 5 months)</b></div>
+					</div>
+				</div>
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-nancy "
+					data-title=" Website UI Update " data-due-date=" 2023-02-28 ">
+					<div class="container-wrapper">
+						<h4 name="project">Website UI Update</h4>
+						<h5><a href="#">First round of updates</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Nancy</span><br>
+						<div>
+							<div class=" percentage-bar red-bar ">
+								<div class="container blue-bar" style="  width:59.113057828169836% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">68h</b></span><br>
+									<span>Est <b class="time">40h</b></span>
+								</div>
+								<span class=" pill pill-red ">+28h</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" blue ">Feb 28, 2023 (remaining: 5 months)</b></div>
+					</div>
+				</div>
+				<div name="milestone" class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix pxm-jake "
+					data-title=" Clothing line " data-due-date=" 2022-07-25 ">
+					<div class="container-wrapper">
+						<h4 name="project">Clothing line</h4>
+						<h5><a
+							href="#">Autumn & Winter Catalogue 2022-2023</a>
+						</h5>
+						<span name="pxm" class="mb-3 pxm-pill pxm-pill-blue ">PXM::Jake</span><br>
+						<div>
+							<div class=" percentage-bar">
+								<div class="container blue-bar" style="  width:30.76% "></div>
+							</div>
+							<div class="info-wrapper">
+								<div><span>Spent <b class="time">20h</b></span><br>
+									<span>Est <b class="time">65h</b></span>
+								</div>
+								<span class=" pill pill-green ">45h remaining</span>
+							</div>
+						</div>
+						<div class="last-item">Due: <b class=" orange ">Oct 30, 2022 (remaining: 1 month)</b></div>
+					
+					</div>
+				</div>
+				<!-- <div style="width: 100vw; padding: 5vw;">
+					<h2 name="project">Shared Notes</h2>
+					<p>A page for keeping notes:</p>
+					<iframe src="#" height="500" width="100%" title="Dashboard Notes"></iframe>	
+				</div> -->
+			</div>		
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/3.3.1/mixitup.min.js"></script>
+		<script>
+			const searchBtn = document.querySelector(".search-icon");
+			const filterBtn = document.querySelector(".filter-icon");
+			const cancelFilterBtn = document.querySelector(".cancel-filter-icon");
+			const cancelBtn = document.querySelector(".cancel-icon");
+			const searchForm = document.querySelector(".search-form");
+			const filtersForm = document.querySelector(".filters");
+			cancelBtn.onclick = ()=>{
+			   searchBtn.classList.remove("hide");
+			   cancelBtn.classList.remove("show");
+			   searchForm.classList.remove("active");
+			   cancelBtn.style.color = "#4287f5";
+			}
+			searchBtn.onclick = ()=>{
+			   searchForm.classList.add("active");
+			   searchBtn.classList.add("hide");
+			   cancelBtn.classList.add("show");
+			}
+			filterBtn.onclick = ()=>{
+			   filtersForm.classList.add("active");
+			   filterBtn.classList.add("hide");
+			   cancelFilterBtn.classList.add("show");
+			}
+			cancelFilterBtn.onclick = ()=>{
+			   filtersForm.classList.remove("active");
+			   filterBtn.classList.remove("hide");
+			   cancelFilterBtn.classList.remove("show");
+			   cancelFilterBtn.style.color = "#4287f5";
+			}
+			document.addEventListener('click', function handleClickOutsideBox(event) {
+			    console.log('user clicked: ', event.target);
+			
+			    if (!filtersForm.contains(event.target) && !filterBtn.contains(event.target)) {
+			        filtersForm.classList.remove("active");
+			        filterBtn.classList.remove("hide");
+			        cancelFilterBtn.classList.remove("show");
+			        cancelFilterBtn.style.color = "#4287f5";
+			    }
+			
+			    if (!searchForm.contains(event.target) && !searchBtn.contains(event.target)) {
+			        searchBtn.classList.remove("hide");
+			        cancelBtn.classList.remove("show");
+			        searchForm.classList.remove("active");
+			        cancelBtn.style.color = "#4287f5";
+			    }
+			
+			});
+			
+			function filtering() {
+				input = document.getElementById("search");
+				var filter = input.value.toUpperCase();
+
+				var list = document.getElementById("list");
+				var divs = document.getElementsByName("milestone");
+				for (var i = 0; i < divs.length; i++) {
+					var innerDiv = divs[i].getElementsByTagName("div")[0];
+					var date = divs[i].getAttribute("data-due-date");
+					// var innerDiv = outDiv.getElementsByTagName("div")[0];
+					var span = innerDiv.getElementsByTagName("span")[0];
+					var h4 = innerDiv.getElementsByTagName("h4")[0];
+					if (span && h4) {
+						if (span.innerHTML.toUpperCase().indexOf(filter) > -1 || h4.innerHTML.toUpperCase().indexOf(filter) > - 1) {
+							divs[i].style.display = "";
+						} else {
+							divs[i].style.display = "none";
+						}
+					}
+
+					if (divs[i].style.display == "none" && date != 'notset') {
+						if (date.indexOf(filter) > -1 && filter.indexOf('-') > -1) {
+							divs[i].style.display = "";
+						} 
+					}
+				}
+
+			}
+			
+			var containerEl = document.querySelector('#list');
+			var mixer = mixitup(containerEl, {
+				load: {
+					filter: 'all',
+					sort: 'title:asc'
+				}
+			});
+
+			var titleSortToggle = document.querySelector('.sorttitle');
+			var duedateSortToggle = document.querySelector('.sortduedate');
+			
+			var ascIcon = '<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+			var descIcon = '<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+			
+			var titlesortorder = "title:desc";
+			var duesortorder = "due-date:desc";
+			
+			
+			titleSortToggle.addEventListener('click', function () {
+			switch (titlesortorder) {
+				case 'title:asc':
+					titlesortorder = 'title:desc';
+					titleSortToggle.innerHTML = 'Title<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+					break;
+				case 'title:desc':
+					titlesortorder = 'title:asc';
+					titleSortToggle.innerHTML = 'Title<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+					break;
+			}
+			
+			mixer.sort(titlesortorder);
+			});
+			
+			
+			duedateSortToggle.addEventListener('click', function () {
+			switch (duesortorder) {
+				case 'due-date:asc':
+					duesortorder = 'due-date:desc';
+					duedateSortToggle.innerHTML =
+						'Latest Due Date<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+					break;
+				case 'due-date:desc':
+					duesortorder = 'due-date:asc';
+					duedateSortToggle.innerHTML =
+						'Earliest Due Date<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+			
+					break;
+			}
+			mixer.sort(duesortorder);
+			});
+		</script>
+	</body>
+</html>

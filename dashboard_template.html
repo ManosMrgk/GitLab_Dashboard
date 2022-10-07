@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="icon"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.2/svgs/brands/square-gitlab.svg"
+    />
+    <title>GitLab Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    {{styles}}
+  </head>
+  <body>
+    <nav>
+      <div class="filter-icon">
+        <span class="fas fa-filter"></span>
+      </div>
+      <div class="cancel-filter-icon">
+        <span class="fas fa-times"></span>
+      </div>
+      <form class="filters" action="#">
+        <h4>Filter by PXM:</h4>
+        <div>
+          {{filters}}
+        <h4>Sort by:</h4>
+        </div>
+        <div>
+          <button type="button" class="sorttitle">
+            Title<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="sortduedate">
+            Earliest Due date<i
+              class="fa fa-caret-up ml-1"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </div>
+      </form>
+      <div class="logo">GitLab Dashboard</div>
+      <div class="search-icon">
+        <span class="fas fa-search"></span>
+      </div>
+      <div class="cancel-icon">
+        <span class="fas fa-times"></span>
+      </div>
+      <form class="search-form" action="#">
+        <input
+          onkeyup="filtering()"
+          id="search"
+          type="search"
+          class="search-data"
+          placeholder="Search"
+          required
+        />
+        <button
+          type="button"
+          class="fas fa-search"
+          onclick="filtering()"
+        ></button>
+      </form>
+    </nav>
+    <div>
+      <div
+        id="list"
+        class="d-flex flex-row flex-wrap"
+        style="padding-top: 100px"
+      >
+        {{milestones}}
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mixitup/3.3.1/mixitup.min.js"></script>
+    <script>
+      const searchBtn = document.querySelector(".search-icon");
+      const filterBtn = document.querySelector(".filter-icon");
+      const cancelFilterBtn = document.querySelector(".cancel-filter-icon");
+      const cancelBtn = document.querySelector(".cancel-icon");
+      const searchForm = document.querySelector(".search-form");
+      const filtersForm = document.querySelector(".filters");
+      cancelBtn.onclick = () => {
+        searchBtn.classList.remove("hide");
+        cancelBtn.classList.remove("show");
+        searchForm.classList.remove("active");
+        cancelBtn.style.color = "#4287f5";
+      };
+      searchBtn.onclick = () => {
+        searchForm.classList.add("active");
+        searchBtn.classList.add("hide");
+        cancelBtn.classList.add("show");
+      };
+      filterBtn.onclick = () => {
+        filtersForm.classList.add("active");
+        filterBtn.classList.add("hide");
+        cancelFilterBtn.classList.add("show");
+      };
+      cancelFilterBtn.onclick = () => {
+        filtersForm.classList.remove("active");
+        filterBtn.classList.remove("hide");
+        cancelFilterBtn.classList.remove("show");
+        cancelFilterBtn.style.color = "#4287f5";
+      };
+      document.addEventListener("click", function handleClickOutsideBox(event) {
+        console.log("user clicked: ", event.target);
+
+        if (
+          !filtersForm.contains(event.target) &&
+          !filterBtn.contains(event.target)
+        ) {
+          filtersForm.classList.remove("active");
+          filterBtn.classList.remove("hide");
+          cancelFilterBtn.classList.remove("show");
+          cancelFilterBtn.style.color = "#4287f5";
+        }
+
+        if (
+          !searchForm.contains(event.target) &&
+          !searchBtn.contains(event.target)
+        ) {
+          searchBtn.classList.remove("hide");
+          cancelBtn.classList.remove("show");
+          searchForm.classList.remove("active");
+          cancelBtn.style.color = "#4287f5";
+        }
+      });
+
+      function filtering() {
+        input = document.getElementById("search");
+        var filter = input.value.toUpperCase();
+
+        var list = document.getElementById("list");
+        var divs = document.getElementsByName("milestone");
+        for (var i = 0; i < divs.length; i++) {
+          var innerDiv = divs[i].getElementsByTagName("div")[0];
+          var date = divs[i].getAttribute("data-due-date");
+          var span = innerDiv.getElementsByTagName("span")[0];
+          var h4 = innerDiv.getElementsByTagName("h4")[0];
+          if (span && h4) {
+            if (
+              span.innerHTML.toUpperCase().indexOf(filter) > -1 ||
+              h4.innerHTML.toUpperCase().indexOf(filter) > -1
+            ) {
+              divs[i].style.display = "";
+            } else {
+              divs[i].style.display = "none";
+            }
+          }
+
+          if (divs[i].style.display == "none" && date != "notset") {
+            if (date.indexOf(filter) > -1 && filter.indexOf("-") > -1) {
+              divs[i].style.display = "";
+            }
+          }
+        }
+      }
+
+      var containerEl = document.querySelector("#list");
+      var mixer = mixitup(containerEl, {
+        load: {
+          filter: "all",
+          sort: "title:asc",
+        },
+      });
+
+      var titleSortToggle = document.querySelector(".sorttitle");
+      var duedateSortToggle = document.querySelector(".sortduedate");
+
+      var ascIcon = '<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+      var descIcon = '<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+
+      var titlesortorder = "title:desc";
+      var duesortorder = "due-date:desc";
+
+      titleSortToggle.addEventListener("click", function () {
+        switch (titlesortorder) {
+          case "title:asc":
+            titlesortorder = "title:desc";
+            titleSortToggle.innerHTML =
+              'Title<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+            break;
+          case "title:desc":
+            titlesortorder = "title:asc";
+            titleSortToggle.innerHTML =
+              'Title<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+            break;
+        }
+
+        mixer.sort(titlesortorder);
+      });
+
+      duedateSortToggle.addEventListener("click", function () {
+        switch (duesortorder) {
+          case "due-date:asc":
+            duesortorder = "due-date:desc";
+            duedateSortToggle.innerHTML =
+              'Latest Due Date<i class="fa fa-caret-down ml-1" aria-hidden="true"></i>';
+            break;
+          case "due-date:desc":
+            duesortorder = "due-date:asc";
+            duedateSortToggle.innerHTML =
+              'Earliest Due Date<i class="fa fa-caret-up ml-1" aria-hidden="true"></i>';
+
+            break;
+        }
+        mixer.sort(duesortorder);
+      });
+    </script>
+  </body>
+</html>

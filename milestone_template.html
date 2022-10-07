@@ -1,0 +1,30 @@
+ 
+        <div
+            name="milestone"
+            class="col-xs-12 col-md-6 col-lg-4 col-xl-3 mb-4 mix {{ pxm_data }}"
+            data-title=" {{ project_name }} "
+            data-due-date=" {{ due_date }} "
+        >
+            <div class="container-wrapper">
+                <h4 name="project">{{ project_name }} </h4>
+                <h5><a href=" {{ milestone_href }} ">{{ milestone_name }} </a></h5>
+                <span name="pxm" class="mb-3 pxm-pill {{ pxm_class }}">{{pxm}}</span><br />
+                <div>
+                <div class="{{ bar_color }}">
+                    <div class="container blue-bar" {{ bar_width }}></div>
+                </div>
+                <div class="info-wrapper">
+                    <div>
+                    <span>Spent <b class="time">{{ hours_spent }}</b></span
+                    ><br />
+                    <span>Est <b class="time">{{ hours_estimated }}</b></span>
+                    </div>
+                    <span {{ pill_style }}>{{ remaining }}</span>
+                </div>
+                </div>
+                <div class="last-item">
+                Due: <b {{ due_color }}>{{ due_date_formatted }}</b>
+                </div>
+            </div>
+        </div>
+
